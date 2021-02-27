@@ -1,0 +1,8 @@
+{
+  "name": "blasfeo",
+  "version": "0.1.2",
+  "maintainers": "Gianluca Frison <gianluca.frison@imtek.uni-freiburg.de>",
+  "description": "Basic linear algebra subroutines for embedded optimization",
+  "homepage": "https://blasfeo.syscop.de/",
+  "supports": "windows & !arm"
+}
