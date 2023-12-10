@@ -21,6 +21,7 @@ set(${PORT}_PATCHES
         clang-cl_QGADGET_fix.diff
         fix-host-aliasing.patch
         fix_deploy_windows.patch
+        fix_qt6androidmacros.patch # When using this package, this cmake macro looks in the wrong path.
         fix-link-lib-discovery.patch
         qmake-arm64.patch
 )

@@ -79,6 +79,7 @@ qt_download_submodule(  OUT_SOURCE_PATH SOURCE_PATH
                             patches/fix-arm64.patch            # Fix corss compile with arm64
                             patches/qmake-arm64.patch          # Fix by Oliver Wolff to support ARM64 hosts on Windows
                             patches/xkbcommon-160.patch        # Newer XKBCommon misses some defines, from https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/53933
+                            patches/lib_nogcc.patch            # Based on https://codereview.qt-project.org/c/qt/qtbase/+/250651
                     )
 
 # Remove vendored dependencies to ensure they are not picked up by the build
