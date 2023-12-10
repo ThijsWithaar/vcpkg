@@ -8,10 +8,6 @@ if(NOT DEFINED QT6_DIRECTORY_PREFIX)
     set(QT6_DIRECTORY_PREFIX "Qt6/")
 endif()
 
-if(VCPKG_TARGET_IS_ANDROID AND NOT ANDROID_SDK_ROOT)
-    message(FATAL_ERROR "${PORT} requires ANDROID_SDK_ROOT to be set. Consider adding it to the triplet." )
-endif()
-
 function(qt_download_submodule_impl)
     cmake_parse_arguments(PARSE_ARGV 0 "_qarg" "" "SUBMODULE" "PATCHES")
 
@@ -119,6 +115,8 @@ function(qt_cmake_configure)
     if(VCPKG_CROSSCOMPILING)
         list(APPEND _qarg_OPTIONS "-DQT_HOST_PATH=${CURRENT_HOST_INSTALLED_DIR}")
         list(APPEND _qarg_OPTIONS "-DQT_HOST_PATH_CMAKE_DIR:PATH=${CURRENT_HOST_INSTALLED_DIR}/share")
+        # See also https://bugreports.qt.io/browse/QTBUG-94524
+        list(APPEND _qarg_OPTIONS "-DQT_ADDITIONAL_HOST_PACKAGES_PREFIX_PATH:PATH=${CURRENT_HOST_INSTALLED_DIR}/share")
     endif()
 
     # Disable warning for CMAKE_(REQUIRE|DISABLE)_FIND_PACKAGE_<packagename>
@@ -137,7 +135,20 @@ function(qt_cmake_configure)
     list(APPEND _qarg_OPTIONS "-DQT_NO_FORCE_SET_CMAKE_BUILD_TYPE:BOOL=ON")
 
     if(VCPKG_TARGET_IS_ANDROID)
+        if(NOT ANDROID_SDK_ROOT)
+            set(ANDROID_SDK_ROOT $ENV{ANDROID_SDK})
+        endif()
+        if(NOT ANDROID_SDK_ROOT)
+            message(FATAL_ERROR "${PORT} requires ANDROID_SDK_ROOT to be set. Consider adding it to the triplet or the environment." )
+        endif()
         list(APPEND _qarg_OPTIONS "-DANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}")
+
+        if(NOT ANDROID_PLATFORM)
+            set(ANDROID_PLATFORM $ENV{ANDROID_PLATFORM})
+        endif()
+        if(NOT ANDROID_PLATFORM)
+            message(WARNING "${PORT} recommends ANDROID_PLATFORM to be set. Consider adding it to the triplet or the environment." )
+        endif()
     endif()
 
     if(NOT PORT MATCHES "qtbase")

@@ -136,7 +136,9 @@ function(configure_qt)
             endif()
         endmacro()
 
-        qmake_add_flags("QMAKE_LIBS" "+=" "${VCPKG_DETECTED_CMAKE_C_STANDARD_LIBRARIES} ${VCPKG_DETECTED_CMAKE_CXX_STANDARD_LIBRARIES}")
+        if(NOT VCPKG_TARGET_IS_ANDROID)
+            qmake_add_flags("QMAKE_LIBS" "+=" "${VCPKG_DETECTED_CMAKE_C_STANDARD_LIBRARIES} ${VCPKG_DETECTED_CMAKE_CXX_STANDARD_LIBRARIES}")
+        endif()
         qmake_add_flags("QMAKE_RC" "+=" "${VCPKG_COMBINED_RC_FLAGS_${_buildname}}")
         qmake_add_flags("QMAKE_CFLAGS_${_buildname}" "+=" "${VCPKG_COMBINED_C_FLAGS_${_buildname}}")
         qmake_add_flags("QMAKE_CXXFLAGS_${_buildname}" "+=" "${VCPKG_COMBINED_CXX_FLAGS_${_buildname}}")
@@ -170,8 +172,28 @@ function(configure_qt)
                 -I ${CURRENT_INSTALLED_DIR}/include/qt5
                 -L ${CURRENT_INSTALLED_DIR}${_path_suffix_${_buildname}}/lib 
                 -L ${CURRENT_INSTALLED_DIR}${_path_suffix_${_buildname}}/lib/manual-link
-                -platform ${_csc_TARGET_PLATFORM}
             )
+
+        if(NOT ANDROID_SDK_ROOT)
+            set(ANDROID_SDK_ROOT $ENV{ANDROID_SDK})
+        endif()
+        if(NOT ANDROID_SDK_ROOT)
+            message(FATAL_ERROR "${PORT} requires ANDROID_SDK_ROOT to be set. Consider adding it to the triplet or the environment." )
+        endif()
+        set(ANDROID_PLATFORM "android-${VCPKG_DETECTED_CMAKE_SYSTEM_VERSION}")
+        if(VCPKG_TARGET_IS_ANDROID)
+            # See https://wiki.qt.io/Android
+            list(APPEND BUILD_OPTIONS
+                -xplatform android-${VCPKG_DETECTED_CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION}
+                --disable-rpath
+                -android-sdk ${ANDROID_SDK_ROOT}
+                -android-ndk ${VCPKG_DETECTED_CMAKE_ANDROID_NDK}
+                -android-ndk-platform ${ANDROID_PLATFORM}
+                -android-ndk-host ${VCPKG_DETECTED_CMAKE_ANDROID_NDK_TOOLCHAIN_HOST_TAG}
+            )
+        else()
+            list(APPEND BUILD_OPTIONS -platform ${_csc_TARGET_PLATFORM})
+        endif()
 
         if(DEFINED _csc_HOST_TOOLS_ROOT) #use qmake
             if(WIN32)

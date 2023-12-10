@@ -1,0 +1,13 @@
+--- a/src/corelib/Qt6AndroidMacros.cmake
++++ b/src/corelib/Qt6AndroidMacros.cmake
+@@ -1033,7 +1033,9 @@
+             NOT QT_BUILD_STANDALONE_TESTS AND NOT QT_INTERNAL_IS_STANDALONE_TEST)
+             set(cmake_dir "${QT_CONFIG_BUILD_DIR}")
+         else()
+-            set(cmake_dir "${prefix_path}/${QT6_INSTALL_LIBS}/cmake")
++            #set(cmake_dir "${prefix_path}/${QT6_INSTALL_LIBS}/cmake")
++            set(cmake_dir "${prefix_path}/share")
++            message(STATUS "## Qt6AndroidMacros: cmake_dir = ${cmake_dir}")
+         endif()
+     endif()
+
