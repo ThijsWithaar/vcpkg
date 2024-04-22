@@ -13,6 +13,7 @@ vcpkg_from_github(
         0004-disable-libomp-aliases.patch
         0005-remove-numpy.patch
         0006-create-destination-mlir-directory.patch
+        0009-export-less-symbols.patch # https://github.com/llvm/llvm-project/issues/87865#issuecomment-2041148045
         75711.patch # [clang] Add intrin0.h header to mimic intrin0.h used by MSVC STL for clang-cl #75711
         79694.patch # [SEH] Ignore EH pad check for internal intrinsics #79694
         82407.patch # [Clang][Sema] Fix incorrect rejection default construction of union with nontrivial member #82407
@@ -33,6 +34,7 @@ vcpkg_check_features(
         enable-ios COMPILER_RT_ENABLE_IOS
         enable-eh LLVM_ENABLE_EH
         enable-bindings LLVM_ENABLE_BINDINGS
+        export-symbols LLVM_EXPORT_SYMBOLS_FOR_PLUGINS
 )
 
 vcpkg_cmake_get_vars(cmake_vars_file)
@@ -197,9 +199,7 @@ if("libunwind" IN_LIST FEATURES)
         -DLIBCXXABI_USE_LLVM_UNWINDER=ON
     )
 else()
-    list(APPEND FEATURE_OPTIONS
-        -DLIBCXXABI_USE_LLVM_UNWINDER=OFF
-    )
+    #list(APPEND FEATURE_OPTIONS -DLIBCXXABI_USE_LLVM_UNWINDER=OFF)
 endif()
 if("pstl" IN_LIST FEATURES)
     if(VCPKG_DETECTED_CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")

@@ -1,0 +1,13 @@
+--- a/llvm/utils/extract_symbols.py       2023-10-03 08:37:35.000000000 +0200
++++ b/llvm/utils/extract_symbols.py     2024-04-23 20:45:11.446842062 +0200
+@@ -90,6 +90,9 @@
+         # Discard floating point/SIMD constants.
+         if symbol.startswith(("__xmm@", "__ymm@", "__real@")):
+             return None
++        # Skip private class methods
++        elif re.search("@[A-F].*@Z$", symbol):
++            return None
+         return symbol
+     # Deleting destructors start with ?_G or ?_E and can be discarded because
+     # link.exe gives you a warning telling you they can't be exported if you
+
